@@ -1,12 +1,13 @@
 const graphql = require('graphql');
 const fetch = require('node-fetch');
-
+const formData = require('form-data')
 const {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
   GraphQLSchema,
   GraphQLList,
+  GraphQLNonNull,
 } = graphql;
 
 const apiHost = 'http://localhost:3000';
@@ -61,6 +62,31 @@ const RootQuery = new GraphQLObjectType({
   }
 });
 
+const mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    addUser: {
+      type: UserType,
+      args: {
+        firstName: {type: new GraphQLNonNull(GraphQLString)},
+        age: {type: new GraphQLNonNull(GraphQLInt)},
+        companyId: {type: GraphQLString}
+      },
+      resolve(parentValue, args ) {
+        return fetch(`${apiHost}/users`, {
+          method: 'POST',
+          headers: {
+            "Content-Type": 'application/json',
+            "Accept": 'application/json'
+          },
+          body: JSON.stringify(args)
+        }).then(res => res.json())
+      }
+    }
+  }
+});
+
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation
 })
