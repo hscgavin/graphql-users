@@ -41,7 +41,14 @@ const RootQuery = new GraphQLObjectType({
       type: UserType,
       args: {id: {type: GraphQLString}},
       resolve(parentValue, args) {
-        return fetch(`${apiHost}/users/${args.id}`).then(res => res.json())
+        return fetch(`${apiHost}/users/${args.id}`).then(res => res.json());
+      }
+    },
+    company: {
+      type: CompanyType,
+      args: {id: {type: GraphQLString}},
+      resolve(parentValue, args) {
+        return fetch(`${apiHost}/companies/${args.id}`).then(res => res.json());
       }
     }
   }
