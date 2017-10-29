@@ -10,13 +10,27 @@ const {
 
 const apiHost = 'http://localhost:3000';
 
+const CompanyType = new GraphQLObjectType({
+  name: 'Company',
+  fields: {
+    id: {type: GraphQLString},
+    name: {type: GraphQLString},
+    description: {type: GraphQLString},
+  }
+});
+
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: {
     id: {type: GraphQLString},
     firstName: {type: GraphQLString},
     age: {type: GraphQLInt},
-
+    company: {
+      type: CompanyType,
+      resolve(parentValue, args) {
+        return fetch(`${apiHost}/companies/${parentValue.companyId}`).then(res => res.json());
+      }
+    }
   }
 });
 
