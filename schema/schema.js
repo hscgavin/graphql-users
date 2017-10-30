@@ -72,7 +72,7 @@ const mutation = new GraphQLObjectType({
         age: {type: new GraphQLNonNull(GraphQLInt)},
         companyId: {type: GraphQLString}
       },
-      resolve(parentValue, args ) {
+      resolve(parentValue, args) {
         return fetch(`${apiHost}/users`, {
           method: 'POST',
           headers: {
@@ -80,6 +80,36 @@ const mutation = new GraphQLObjectType({
             "Accept": 'application/json'
           },
           body: JSON.stringify(args)
+        }).then(res => res.json())
+      }
+    },
+    deleteUser: {
+      type: UserType,
+      args: {
+        id: {type: new GraphQLNonNull(GraphQLString)}
+      },
+      resolve(parentValue, { id }) {
+        return fetch(`${apiHost}/users/${id}`, {
+          method: "DELETE",
+        }).then(res => res.json());
+      }
+    },
+    editUser: {
+      type: UserType,
+      args: {
+        id: {type: new GraphQLNonNull(GraphQLString)},
+        firstName: {type: GraphQLString},
+        age: {type: GraphQLInt},
+        companyId: {type: GraphQLString}
+      },
+      resolve(parentValue, {id, ...restArgs}) {
+        return fetch(`${apiHost}/users/${id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": 'application/json',
+            "Accept": 'application/json'
+          },
+          body: JSON.stringify({...restArgs})
         }).then(res => res.json())
       }
     }
